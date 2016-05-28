@@ -2,11 +2,14 @@
 *.cmo
 *.cma
 *.cmi
+*.cmt
+*.cmti
 *.a
 *.o
 *.cmx
 *.cmxs
 *.cmxa
+*.opt
 
 # ocamlbuild working directory
 _build/
@@ -18,3 +21,14 @@ _build/
 # oasis generated files
 setup.data
 setup.log
+
+*.swp
+*.omc
+.omakedb
+.omakedb.lock
+lexer.ml
+parser.ml
+parser.mli
+*.automaton
+*.conflicts
+ocalc

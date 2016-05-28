@@ -13,14 +13,6 @@
 %token <int> DIV        (* "/" *)
 %token <int> REM        (* "%" *)
 %token <int> POW        (* "^" *)
-%token <int> CLEAR      (* "ac" *)
-%token <int> READ       (* "r" *)
-%token <int> WRITE      (* "w" *)
-%token <int> SWAP       (* "sw" *)
-%token <int> LIST       (* "l" *)
-%token <int> ROLLDOWN   (* "rd" *)
-%token <int> ROLLUP     (* "ru" *)
-%token <int> ABS        (* "abs" *)
 %token EOL
 
 %start <Ast.t list> command

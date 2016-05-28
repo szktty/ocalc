@@ -9,15 +9,13 @@ and desc =
   | Int of int
   | Float of float
   | String of string
-  | Var of string
-  | Clear
-  | Read
-  | Write
-  | Swap
-  | List
-  | Rolldown
-  | Rollup
-  | Abs
+  | Command of string
+  | Add
+  | Sub
+  | Mul
+  | Div
+  | Pow
+  | Rem
 
 let with_loc loc desc =
   { loc_offset = loc; loc_desc = desc }

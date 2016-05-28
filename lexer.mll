@@ -1,17 +1,22 @@
 {
 open Lexing
 open Parser
-open Printf
 
-let print_error lexbuf msg =
+exception Error of string
+
+let parse_error lexbuf msg =
+    let buf = Buffer.create 64 in
     let s = lexeme lexbuf in
-    printf "%s\n" s;
+    Buffer.add_string buf s;
+    Buffer.add_string buf "\n";
     for _ = 0 to lexbuf.lex_start_pos do
-        printf " "
+        Buffer.add_string buf " "
     done;
-    printf "^\n";
-    printf "error: %s\n" msg;
-    exit 1
+    Buffer.add_string buf "^\n";
+    Buffer.add_string buf "error: ";
+    Buffer.add_string buf msg;
+    let msg = Buffer.contents buf in
+    raise (Error msg)
 
 }
 
@@ -36,13 +41,13 @@ rule read =
   { try
       INT (Ast.with_loc lexbuf.lex_start_pos (int_of_string (lexeme lexbuf)))
     with
-    | Failure _ -> print_error lexbuf "invalid integer value"
+    | Failure _ -> parse_error lexbuf "invalid integer value"
   }
   | float
   { try
       FLOAT (Ast.with_loc lexbuf.lex_start_pos (float_of_string (lexeme lexbuf)))
     with
-    | Failure _ -> print_error lexbuf "invalid float value"
+    | Failure _ -> parse_error lexbuf "invalid float value"
   }
   | '('         { LPAREN lexbuf.lex_start_pos }
   | ')'         { RPAREN lexbuf.lex_start_pos }
@@ -53,14 +58,6 @@ rule read =
   | '^'         { POW lexbuf.lex_start_pos }
   | '/'         { DIV lexbuf.lex_start_pos }
   | '%'         { REM lexbuf.lex_start_pos }
-  | "ac"        { CLEAR lexbuf.lex_start_pos }
-  | "r"         { READ lexbuf.lex_start_pos }
-  | "w"         { WRITE lexbuf.lex_start_pos }
-  | "sw"        { SWAP lexbuf.lex_start_pos }
-  | "rd"        { ROLLDOWN lexbuf.lex_start_pos }
-  | "ru"        { ROLLUP lexbuf.lex_start_pos }
-  | "l"         { LIST lexbuf.lex_start_pos }
-  | "abs"       { ABS lexbuf.lex_start_pos }
   | id          { IDENT (Ast.with_loc lexbuf.lex_start_pos (lexeme lexbuf)) }
-  | _           { print_error lexbuf "invalid syntax" }
+  | _           { parse_error lexbuf "invalid syntax" }
   | eof         { EOL }

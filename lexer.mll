@@ -9,14 +9,16 @@ let parse_error lexbuf msg =
     let s = lexeme lexbuf in
     Buffer.add_string buf s;
     Buffer.add_string buf "\n";
-    for _ = 0 to lexbuf.lex_start_pos do
+    for _ = 0 to (lexbuf.lex_start_pos-1) do
         Buffer.add_string buf " "
     done;
     Buffer.add_string buf "^\n";
     Buffer.add_string buf "error: ";
     Buffer.add_string buf msg;
-    let msg = Buffer.contents buf in
-    raise (Error msg)
+    Buffer.contents buf
+
+let raise_parse_error lexbuf msg =
+    raise @@ Error (parse_error lexbuf msg)
 
 }
 
@@ -41,13 +43,13 @@ rule read =
   { try
       INT (Ast.with_loc lexbuf.lex_start_pos (int_of_string (lexeme lexbuf)))
     with
-    | Failure _ -> parse_error lexbuf "invalid integer value"
+    | Failure _ -> raise_parse_error lexbuf "invalid integer value"
   }
   | float
   { try
       FLOAT (Ast.with_loc lexbuf.lex_start_pos (float_of_string (lexeme lexbuf)))
     with
-    | Failure _ -> parse_error lexbuf "invalid float value"
+    | Failure _ -> raise_parse_error lexbuf "invalid float value"
   }
   | '('         { LPAREN lexbuf.lex_start_pos }
   | ')'         { RPAREN lexbuf.lex_start_pos }
@@ -59,5 +61,5 @@ rule read =
   | '/'         { DIV lexbuf.lex_start_pos }
   | '%'         { REM lexbuf.lex_start_pos }
   | id          { IDENT (Ast.with_loc lexbuf.lex_start_pos (lexeme lexbuf)) }
-  | _           { parse_error lexbuf "invalid syntax" }
+  | _           { raise_parse_error lexbuf "invalid syntax" }
   | eof         { EOL }

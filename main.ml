@@ -14,11 +14,16 @@ let options = [
 let _ =
   Arg.parse options anon_fun usage;
   while true do
-    printf "> ";
-    let line = String.trim @@ read_line () in
-    let lexbuf = Lexing.from_string line in
-    let _ = Parser.command Lexer.read lexbuf in
-    ()
+    let lexbuf = ref @@ Lexing.from_string "" in (* dummy *)
+    try begin
+      printf "> ";
+      let line = String.trim @@ read_line () in
+      lexbuf := Lexing.from_string line;
+      let _ = Parser.command Lexer.read !lexbuf in
+      ()
+    end with
+    | Parser.Error -> printf "%s\n" (Lexer.parse_error !lexbuf "invalid syntax")
+    | exn -> raise exn
   done
 
 (*val command: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (Ast.t list)*)

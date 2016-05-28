@@ -9,7 +9,7 @@ and desc =
   | Int of int
   | Float of float
   | String of string
-  | Command of string
+  | Id of string
   | Add
   | Sub
   | Mul

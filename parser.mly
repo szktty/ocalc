@@ -25,4 +25,5 @@ command:
 term:
   | INT { Ast.of_loc $1 (Ast.Int $1.loc_desc) }
   | FLOAT { Ast.of_loc $1 (Ast.Float $1.loc_desc) }
+  | IDENT { Ast.of_loc $1 (Ast.Id $1.loc_desc) }
 

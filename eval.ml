@@ -37,17 +37,23 @@ let run eval s =
       (x, y)
     in
 
-    let _operate node =
-      let open Ast in
-      match node.loc_desc with
-      | Ast.Add ->
-        begin match pop2_exn () with
-        | (Value.Int x, Value.Int y) -> push eval (Value.Int (x+y))
-        | _ -> failwith "not impl"
-        end
-      | _ -> raise (Error (node.loc_pos, "error: unknown operator"))
+    let error msg =
+      raise (Error (node.loc_pos, msg))
     in
-      ()
+
+    match node.loc_desc with
+    | Int v -> push eval (Value.Int v)
+    | Float v -> push eval (Value.Float v)
+    | Add ->
+      begin match pop2_exn () with
+      | (Value.Int x, Value.Int y) -> push eval (Value.Int (x+y))
+      | (Value.Int iv, Value.Float fv)
+      | (Value.Float fv, Value.Int iv) ->
+        let v = fv +. (float_of_int iv) in
+        push eval (Value.Float v)
+      | (Value.Float x, Value.Float y) -> push eval (Value.Float (x+.y))
+      end
+    | _ -> error "error: unknown operator"
   in
 
   let lexbuf = Lexing.from_string s in

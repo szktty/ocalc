@@ -27,4 +27,4 @@ term:
   | INT { Ast.of_loc $1 (Ast.Int $1.loc_desc) }
   | FLOAT { Ast.of_loc $1 (Ast.Float $1.loc_desc) }
   | IDENT { Ast.of_loc $1 (Ast.Atom $1.loc_desc) }
-
+  | ADD { Ast.with_loc $1 Ast.Add }

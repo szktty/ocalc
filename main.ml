@@ -34,7 +34,7 @@ let _ =
       Eval.run eval line;
       begin match Eval.top eval with
       | None -> ()
-      | Some v -> printf "\n%s\n" (Value.to_string v)
+      | Some v -> printf "%s\n" (Value.to_string v)
       end;
     end with
     | Eval.Error (pos, msg) -> print_error line pos msg

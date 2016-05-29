@@ -13,6 +13,7 @@
 %token <int> DIV        (* "/" *)
 %token <int> REM        (* "%" *)
 %token <int> POW        (* "^" *)
+%token <int> BANG       (* "^" *)
 %token EOL
 
 %start <Ast.t list> command
@@ -25,5 +26,5 @@ command:
 term:
   | INT { Ast.of_loc $1 (Ast.Int $1.loc_desc) }
   | FLOAT { Ast.of_loc $1 (Ast.Float $1.loc_desc) }
-  | IDENT { Ast.of_loc $1 (Ast.Id $1.loc_desc) }
+  | IDENT { Ast.of_loc $1 (Ast.Atom $1.loc_desc) }
 

@@ -1,5 +1,5 @@
 type 'a loc = {
-  loc_offset : int;
+  loc_pos : int;
   loc_desc : 'a;
 }
 
@@ -9,16 +9,17 @@ and desc =
   | Int of int
   | Float of float
   | String of string
-  | Id of string
+  | Atom of string
   | Add
   | Sub
   | Mul
   | Div
   | Pow
   | Rem
+  | Bang
 
 let with_loc loc desc =
-  { loc_offset = loc; loc_desc = desc }
+  { loc_pos = loc; loc_desc = desc }
 
 let of_loc loc desc =
-  with_loc loc.loc_offset desc
+  with_loc loc.loc_pos desc

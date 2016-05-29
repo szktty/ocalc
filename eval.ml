@@ -1,4 +1,4 @@
-exception Error of string
+exception Error of (int * string)
 
 type t = {
   mutable stack : Value.t list
@@ -6,36 +6,54 @@ type t = {
 
 let create () = { stack = [] }
 
-let push env v =
-  env.stack <- v :: env.stack
+let push eval v =
+  eval.stack <- v :: eval.stack
 
-let top env =
-  match env.stack with
+let top eval =
+  match eval.stack with
   | [] -> None
   | hd :: _ -> Some hd
 
-let pop env =
-  match env.stack with
+let pop eval =
+  match eval.stack with
   | [] -> None
   | hd :: tl -> 
-    env.stack <- tl;
+    eval.stack <- tl;
     Some hd
 
-let pop_exn env =
-  match pop env with
-  | None -> raise (Error "error: stack is empty")
-  | Some v -> v
+let run eval s =
+  let f node =
+    let open Ast in
 
-let pop2_exn env =
-  let y = pop_exn env in
-  let x = pop_exn env in
-  (x, y)
+    let pop_exn () =
+      match pop eval with
+      | None -> raise (Error (node.loc_pos,"stack is empty"))
+      | Some v -> v
+    in
 
-let operate env node =
-  match Ast.(node.loc_desc) with
-  | Ast.Add ->
-    begin match pop2_exn env with
-    | (Value.Int x, Value.Int y) -> push env (Value.Int (x+y))
-    | _ -> failwith "not impl"
-    end
-  | _ -> raise (Error "error: unknown operator")
+    let pop2_exn () =
+      let y = pop_exn () in
+      let x = pop_exn () in
+      (x, y)
+    in
+
+    let _operate node =
+      let open Ast in
+      match node.loc_desc with
+      | Ast.Add ->
+        begin match pop2_exn () with
+        | (Value.Int x, Value.Int y) -> push eval (Value.Int (x+y))
+        | _ -> failwith "not impl"
+        end
+      | _ -> raise (Error (node.loc_pos, "error: unknown operator"))
+    in
+      ()
+  in
+
+  let lexbuf = Lexing.from_string s in
+  try begin
+     let nodes = Parser.command Lexer.read lexbuf in
+     List.iter f nodes
+  end with
+  | Parser.Error -> raise (Error (lexbuf.lex_start_pos, "invalid syntax"))
+  | exn -> raise exn

@@ -11,16 +11,16 @@ let options = [
 ]
 
 let print_error src pos msg =
-    let buf = Buffer.create 64 in
-    Buffer.add_string buf src;
-    Buffer.add_string buf "\n";
-    for _ = 0 to (pos-1) do
-        Buffer.add_string buf " "
-    done;
-    Buffer.add_string buf "^\n";
-    Buffer.add_string buf "error: ";
-    Buffer.add_string buf msg;
-    printf "%s\n" (Buffer.contents buf)
+  let buf = Buffer.create 64 in
+  Buffer.add_string buf src;
+  Buffer.add_string buf "\n";
+  for _ = 0 to (pos-1) do
+    Buffer.add_string buf " "
+  done;
+  Buffer.add_string buf "^\n";
+  Buffer.add_string buf "error: ";
+  Buffer.add_string buf msg;
+  printf "%s\n" (Buffer.contents buf)
 
 (* entry point *)
 let _ =

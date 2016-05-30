@@ -8,8 +8,8 @@ type t = desc loc
 and desc =
   | Int of int
   | Float of float
-  | String of string
-  | Atom of string
+  | Symbol of string
+  | Command of string
   | Add
   | Sub
   | Mul

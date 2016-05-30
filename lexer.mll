@@ -22,6 +22,7 @@ let float = fnum exp? | hex hexfnum binexp?
 let space = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
+let symbol = '#' id
 
 rule read =
   parse
@@ -38,9 +39,6 @@ rule read =
     with
     | Failure _ -> parse_error lexbuf "invalid float value"
   }
-  | '('         { LPAREN lexbuf.lex_start_pos }
-  | ')'         { RPAREN lexbuf.lex_start_pos }
-  | '.'         { DOT lexbuf.lex_start_pos }
   | '+'         { ADD lexbuf.lex_start_pos }
   | '-'         { SUB lexbuf.lex_start_pos }
   | '*'         { MUL lexbuf.lex_start_pos }
@@ -49,5 +47,7 @@ rule read =
   | '%'         { REM lexbuf.lex_start_pos }
   | '!'         { BANG lexbuf.lex_start_pos }
   | id          { IDENT (Ast.with_loc lexbuf.lex_start_pos (lexeme lexbuf)) }
+  | '#' (id as name)
+  { SYMBOL (Ast.with_loc lexbuf.lex_start_pos name) }
   | _           { parse_error lexbuf "invalid syntax" }
   | eof         { EOL }

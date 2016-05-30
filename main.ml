@@ -26,7 +26,7 @@ let print_error src pos msg =
 let _ =
   Arg.parse options anon_fun usage;
   let eval = Eval.create() in
-  printf "Try \"help\" for more information.\n";
+  printf "Try \"h\" for more information.\n";
   while true do
     printf ">>> ";
     let line = String.trim @@ read_line () in

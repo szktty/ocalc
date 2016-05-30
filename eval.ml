@@ -1,3 +1,4 @@
+open Spotlib.Spot
 open Printf
 
 exception Error of (int * string)
@@ -26,17 +27,23 @@ let pop eval =
 let clear eval =
   eval.stack <- []
 
-let commands = [
-  ("clear", clear);
-  ("help", fun _ -> printf "help message\n"); (* TODO *)
-  ("ls", fun eval ->
+let rec commands = [
+  ("c", "clear the stack", clear);
+  ("exit", "exit this program", fun _ -> exit 0);
+  ("h", "show this message", fun _ ->
+     printf "commands:\n";
+     List.iter (fun (name, doc, _) ->
+                  printf "    %- 8s    %s\n" name doc) commands);
+  ("ls", "show contents of the stack",
+   fun eval ->
      ignore @@ List.fold_left
                  (fun i v ->
                     printf "%d: %s\n" i (Value.to_string v);
                     i - 1)
                  ((List.length eval.stack) - 1)
                  eval.stack);
-  ("top", fun eval ->
+  ("pop", "pop the top of the stack", fun eval -> ignore @@ pop eval);
+  ("top", "show the top of the stack", fun eval ->
      match top eval with
      | None -> printf "error: stack is empty\n"
      | Some v -> printf "%s\n" (Value.to_string v));
@@ -74,20 +81,23 @@ let run eval s =
       push eval v
     in
 
-    let apply name =
-      if List.mem_assoc name commands then
-        (List.assoc name commands) eval
-      else
-        push eval @@ Value.Atom name
-    in
-
     match node.loc_desc with
     | Int v -> push eval (Value.Int v)
     | Float v -> push eval (Value.Float v)
+    | Symbol v -> push eval (Value.Symbol v)
     | Add -> arith_op (+) (+.)
     | Sub -> arith_op (-) (-.)
-    | Atom name -> apply name
-    | _ -> error "unknown operator"
+    | Mul -> arith_op ( * ) ( *. )
+    | Div -> arith_op (/) (/.)
+    | Command name ->
+      begin match List.find_map_opt
+                    (fun (cmd, _, f) ->
+                       if cmd = name then Some f else None) commands
+      with
+      | None -> error (sprintf "unknown command: %s" name)
+      | Some f -> f eval
+      end
+    | _ -> failwith "not impl"
   in
 
   let lexbuf = Lexing.from_string s in

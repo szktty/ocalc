@@ -40,9 +40,12 @@ rule read =
     | Failure _ -> parse_error lexbuf "invalid float value"
   }
   | '+'         { ADD lexbuf.lex_start_pos }
+  | "+!"        { ADD_ALL lexbuf.lex_start_pos }
   | '-'         { SUB lexbuf.lex_start_pos }
+  | "-!"        { SUB_ALL lexbuf.lex_start_pos }
   | '*'         { MUL lexbuf.lex_start_pos }
-  | '^'         { POW lexbuf.lex_start_pos }
+  | "*!"        { MUL_ALL lexbuf.lex_start_pos }
+  | "**"        { POW lexbuf.lex_start_pos }
   | '/'         { DIV lexbuf.lex_start_pos }
   | '%'         { REM lexbuf.lex_start_pos }
   | '!'         { BANG lexbuf.lex_start_pos }

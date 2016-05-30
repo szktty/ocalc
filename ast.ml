@@ -11,8 +11,11 @@ and desc =
   | Symbol of string
   | Command of string
   | Add
+  | Add_all
   | Sub
+  | Sub_all
   | Mul
+  | Mul_all
   | Div
   | Pow
   | Rem

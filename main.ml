@@ -10,14 +10,18 @@ let options = [
   ("-version", Arg.Unit (fun () -> printf "%s\n" version), "Print version")
 ]
 
-let print_error src pos msg =
+let print_error src ?pos msg =
   let buf = Buffer.create 64 in
-  Buffer.add_string buf src;
-  Buffer.add_string buf "\n";
-  for _ = 0 to (pos-1) do
-    Buffer.add_string buf " "
-  done;
-  Buffer.add_string buf "^\n";
+  begin match pos with
+    | None -> ()
+    | Some pos ->
+        Buffer.add_string buf src;
+        Buffer.add_string buf "\n";
+        for _ = 0 to (pos-1) do
+          Buffer.add_string buf " "
+        done;
+        Buffer.add_string buf "^\n";
+  end;
   Buffer.add_string buf "error: ";
   Buffer.add_string buf msg;
   printf "%s\n" (Buffer.contents buf)
@@ -37,6 +41,6 @@ let _ =
       | Some v -> printf "%s\n" (Value.to_string v)
       end;
     end with
-    | Eval.Error (pos, msg) -> print_error line pos msg
+    | Eval.Error (pos, msg) -> print_error line ?pos msg
     | exn -> raise exn
   done

@@ -25,7 +25,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY: all install clean
+.PHONY: all install uninstall clean
 
 ########################################################################
 # Subdirectories.
@@ -167,7 +167,19 @@ PROGRAM = ocalc
 # OCAML_LIB_FLAGS +=
 #
 
+if $(not $(defined PREFIX))
+	PREFIX = /usr/local
+	export
+if $(not $(defined BINDIR))
+	BINDIR = $(PREFIX)/bin
+	export
+
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
+
+install: $(OCamlProgramInstall install, $(BINDIR), $(PROGRAM), $(FILES))
+
+uninstall:
+	rm -f $(BINDIR)/$(PROGRAM)
 
 clean:
 	rm -rf *.automaton *.conflicts *.annot *.opt *.omc *.cmi *.cmt *.cmti *.cmx *.o $(PROGRAM) parser.ml parser.mli lexer.ml

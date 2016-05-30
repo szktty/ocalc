@@ -1,0 +1,25 @@
+opam-version: "1.2"
+version: "1.0.0"
+authors: "SUZUKI Tetsuya"
+maintainer: "tetsuya.suzuki@gmail.com"
+homepage: "https://github.com/szktty/ocalc"
+bug-reports: "https://github.com/szktty/ocalc/issues"
+dev-repo: "https://github.com/szktty/ocalc.git"
+license: "Apache License, Version 2.0"
+build: [
+    [ "omake" "PREFIX=%{prefix}%" ]
+]
+install: [
+    [ "omake" "install" "PREFIX=%{prefix}%" ]
+]
+remove: [
+    [ "omake" "uninstall" "PREFIX=%{prefix}%" ]
+]
+depends: [
+  "omake" { = "0.9.8.6-0.rc1" }
+  "menhir" { = "20160504" }
+  "spotlib" { = "3.1.0" }
+]
+available: [
+  ocaml-version >= "4.03.0"
+]

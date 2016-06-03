@@ -174,9 +174,12 @@ if $(not $(defined BINDIR))
 	BINDIR = $(PREFIX)/bin
 	export
 
-.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
+OCamlProgram($(PROGRAM), $(FILES))
 
-install: $(OCamlProgramInstall install, $(BINDIR), $(PROGRAM), $(FILES))
+.DEFAULT: $(PROGRAM)
+
+install: $(PROGRAM)
+	cp $(PROGRAM) $(BINDIR)
 
 uninstall:
 	rm -f $(BINDIR)/$(PROGRAM)
